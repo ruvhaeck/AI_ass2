@@ -1,27 +1,34 @@
 import Map
 
-def h(pos_a: list[int], pos_b:list[int]):
+def h(pos_a: list[int], pos_b:list[int]) -> int:
+    """
+    Calculates the Manhattan distance between the 2 points
+    """
     return abs(pos_a[0] - pos_b[0]) + abs(pos_a[1] - pos_b[1])
 
-def get_valid_neighbours(pos: list[int], map):
+
+def get_valid_neighbours(pos: list[int], map) -> list[list[int]]:
+    """
+    Returns the valid positions from the given position
+    """
     neighbours = []
-    if pos[0] > 0 and map[pos[0]-1][pos[1]] != -1:   # check if the position is not a left wall
+    if map[pos[0]-1][pos[1]] != -1:   # check to the left
         neighbours.append([pos[0]-1, pos[1]])
-    if pos[0] < len(map) - 1 and map[pos[0]+1][pos[1]] != -1:  # check if the position is not a right wall
+    if map[pos[0]+1][pos[1]] != -1:  # check to the right
         neighbours.append([pos[0]+1, pos[1]])
-    if pos[1] > 0 and map[pos[0]][pos[1]-1] != -1:  # check if the position is not a top wall
+    if map[pos[0]][pos[1]-1] != -1:  # check to the top
         neighbours.append([pos[0], pos[1]-1])
-    if pos[1] < len(map[0]) - 1 and map[pos[0]][pos[1]+1] != -1:    # check if the position is not a bottom wall
+    if map[pos[0]][pos[1]+1] != -1:    # check beneath
         neighbours.append([pos[0], pos[1]+1])
     return neighbours
 
 
+
 def a_star(start_pos: list[int], end_pos: list[int], map, obj: Map.Map_Obj):
-    path = []
-    frontier = []
-    expand = start_pos
-    # dict with as key the positions and value 'cost so far'
-    g = {tuple(obj.get_start_pos()): 0}  # cost so far 
+    path = []   # path from end to start
+    frontier = []   # as seen in the lecture, ordered list with positions that can be expanded
+    expand = start_pos  # as seen in the lecture, start by expanding the starting point
+    g = {tuple(obj.get_start_pos()): 0}  # dict with as key the positions and value 'cost so far'
     came_from = {}
     while expand != end_pos:
         neighbours = get_valid_neighbours(expand, map)
@@ -33,16 +40,18 @@ def a_star(start_pos: list[int], end_pos: list[int], map, obj: Map.Map_Obj):
         frontier.sort(key=lambda x: h(x, end_pos) + g[tuple(x)])
         prev_expand = expand
         expand = frontier.pop(0)
+    
+    # reconstruct the path
     pos = tuple(end_pos)
     while pos != tuple(start_pos):
         pos = came_from[tuple(pos)]
         path.append(pos)
-    del(path[len(path)-1])
+    del(path[len(path)-1])  # remove the start position from the path, such that we still see the color from the start position
 
     return path
 
 
-task = 4
+task = 4    # specify task to execute
 if task == 1:
     obj = Map.Map_Obj(task=1)
     map, map_string = obj.read_map("Samfundet_map_1.csv")
@@ -70,7 +79,6 @@ elif task == 4:
     map, map_string = obj.read_map("Samfundet_map_2.csv")
 
     path = a_star(obj.get_start_pos(), obj.get_end_goal_pos(), map, obj)
-    print("finished, path:", path)
 
     for pos in path:
         obj.set_cell_value(pos, 3)
