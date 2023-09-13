@@ -339,7 +339,8 @@ class Map_Obj():
             ' : ': (96, 96, 96),   # darkgrey
             ' ; ': (36, 36, 36),   # blackish
             ' S ': (255, 0, 255),  # magenta
-            ' G ': (0, 128, 255)   # cyan
+            ' G ': (0, 128, 255),   # cyan
+            'P': (255, 255, 255)    # black for the path
         }
         # Go through image and set pixel color for every position
         for y in range(height):
